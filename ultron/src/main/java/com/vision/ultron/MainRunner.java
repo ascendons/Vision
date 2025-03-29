@@ -1,13 +1,13 @@
-package com.vision.backend;
+package com.vision.ultron;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BackendApplication {
+public class MainRunner {
 
     public static void main(String[] args) {
-        SpringApplication.run(BackendApplication.class, args);
+        SpringApplication.run(MainRunner.class, args);
     }
 
 }

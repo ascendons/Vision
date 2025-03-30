@@ -15,15 +15,21 @@ def train_model(file_paths):
     if not combined_text:
         raise ValueError("No valid text data found for training.")
 
-    # Define Ollama training parameters
-    model_name = "custom-ollama-model"
-    # ollama.create(model_name, {"data": combined_text})
-    ollama.create(
-        model=model_name,
-        from_="mistral",
-        adapters={"custom-data": combined_text}  # Add your data file
-    )
-    # ollama.create(model="test-model", modelfile="FROM mistral\n\nThis is a test.")
+    # Define model name
+    model_name = "custom-ollama-model1"
+
+    # Use a writable directory (your project path)
+    modelfile_path = os.path.expanduser("~/IdeaProjects/Vision/llm-engine/models/Modelfile")
+
+# Ensure the directory exists
+    os.makedirs(os.path.dirname(modelfile_path), exist_ok=True)
+
+    # Write the model definition to a temporary file
+    with open(modelfile_path, "w", encoding="utf-8") as f:
+        f.write(f"FROM llama3.2\n\nPARAMETER temperature 1\n\nSYSTEM \"\"\"{combined_text}\"\"\"")
+
+    # Call Ollama via command-line to create the model
+    os.system(f"ollama create {model_name} -f {modelfile_path}")
 
     print(f"Model '{model_name}' trained successfully!")
     return model_name

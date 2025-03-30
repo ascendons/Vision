@@ -1,5 +1,5 @@
 import os
-import ollama
+import subprocess
 
 def train_model(file_paths):
     """Train an Ollama model using text data from valid files."""
@@ -16,20 +16,26 @@ def train_model(file_paths):
         raise ValueError("No valid text data found for training.")
 
     # Define model name
-    model_name = "custom-ollama-model1"
+    model_name = "custom-ollama-model2"
 
     # Use a writable directory (your project path)
     modelfile_path = os.path.expanduser("~/IdeaProjects/Vision/llm-engine/models/Modelfile")
 
-# Ensure the directory exists
+    # Ensure the directory exists
     os.makedirs(os.path.dirname(modelfile_path), exist_ok=True)
 
-    # Write the model definition to a temporary file
+    # Escape double quotes in combined_text
+    combined_text = combined_text.replace('"', '\\"').replace("\ufeff", "")
+
+    # Write the model definition to a file
     with open(modelfile_path, "w", encoding="utf-8") as f:
-        f.write(f"FROM llama3.2\n\nPARAMETER temperature 1\n\nSYSTEM \"\"\"{combined_text}\"\"\"")
+        f.write(f"FROM llama3.2\n\nPARAMETER temperature 0\n\nSYSTEM \"\"\"\n{combined_text}\n\"\"\"")
 
     # Call Ollama via command-line to create the model
-    os.system(f"ollama create {model_name} -f {modelfile_path}")
+    try:
+        subprocess.run(["ollama", "create", model_name, "-f", modelfile_path], check=True)
+        print(f"Model '{model_name}' trained successfully!")
+    except subprocess.CalledProcessError as e:
+        print(f"Error training model: {e}")
 
-    print(f"Model '{model_name}' trained successfully!")
     return model_name

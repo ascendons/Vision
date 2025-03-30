@@ -17,7 +17,13 @@ def train_model(file_paths):
 
     # Define Ollama training parameters
     model_name = "custom-ollama-model"
-    ollama.create_model(model_name, {"data": combined_text})
+    # ollama.create(model_name, {"data": combined_text})
+    ollama.create(
+        model=model_name,
+        from_="mistral",
+        adapters={"custom-data": combined_text}  # Add your data file
+    )
+    # ollama.create(model="test-model", modelfile="FROM mistral\n\nThis is a test.")
 
     print(f"Model '{model_name}' trained successfully!")
     return model_name
